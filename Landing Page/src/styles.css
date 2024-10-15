@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200;300&display=swap');
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Titillium Web', sans-serif;
+}
+
+
+html{
+    scroll-behavior: smooth;
+}
+
+.container{
+    max-width: 1080px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.container1{
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+
+header{
+    background-color: black;
+    width: 100%;
+    padding: 15px 4%;
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+}
+
+.menu{
+    width: 50%;
+}
+
+
+
+.menu nav a{
+    color: #c4c4c4;
+    text-decoration: none;
+    font-size: 18px;
+    padding-right: 30px;
+    padding-bottom: 8px;
+    position: relative;
+}
+
+
+
+.menu nav a::after{
+    content: '';
+    width: 0;
+    height: 4px;
+    background-image: linear-gradient(45deg , #0011ff, #db9eeb);
+    position:absolute;
+    bottom: 0;
+    left: 0;
+    transition: width 0.5s;
+}
+
+
+.menu nav a:hover::after{
+    width: 30px;
+}
+
+
+.menu nav a:hover{
+    color: #ffffff;
+    font-size: 18pt;
+}
+
+.social{
+    width: 25%;
+}
+
+.social button{
+    width: 40px;
+    height: 40px;
+    margin-right: 20px;
+    border: 0;
+    cursor: pointer;
+    background-image: linear-gradient(45deg , #0011ff, #db9eeb);
+    border-radius: 5px;
+     transition: transform 0.5s;
+}
+
+
+.social button i{
+    font-size: 20px;
+    text-align: center;
+    color: #ffffff;
+}
+
+
+.social button:hover{
+    transform: scale(0.9);
+}
+
+
+section{
+    padding: 90px 4%;
+    border-bottom: 25px;
+}
+
+
+section h2{
+    font-size: 2em;
+    margin-bottom: 25px;
+}
+
+
+section p{
+    font-size: 20px;
+}
+
+
+#btn-menu,
+#btn-menu-close{
+    color: #ffffff;
+    font-size: 30px;
+    cursor: pointer;
+    display: none;
+}
