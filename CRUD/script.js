@@ -1,36 +1,37 @@
+// Obtém o formulário pelo ID
 const form = document.getElementById('registrationForm');
-
+// Obtém o elemento onde a mensagem será exibida
 const message = document.getElementById('message');
 
-
-
-form.addEventListener('subtmit', (event) => {
+// Adiciona um evento ao formulário para tratar o envio
+form.addEventListener('submit', function(event) {
+    // Impede o envio padrão do formulário
     event.preventDefault();
 
-    const name = document.querySelector('input [name="name"]').value;
-    const email = document.querySelector('input [name="email"]').value;
-    const password = document.querySelector('input [name="password"]').value;
+    // Obtém os valores dos campos
+    const name = document.querySelector('input[name="name"]').value;
+    const email = document.querySelector('input[name="email"]').value;
+    const password = document.querySelector('input[name="password"]').value;
 
-
-    if(name.trim() === '' || email.trim() === '' || password.trim() === ''){
-        message.textContent = 'Todos os campos devem ser preenchidos';
-
-        return;
+    // Valida se os campos não estão vazios
+    if (name.trim() === '' || email.trim() === '' || password.trim() === '') {
+        message.textContent = 'Todos os campos são obrigatórios.'; // Exibe mensagem de erro
+        return; // Interrompe a execução se houver erro
     }
 
-    const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+    // Valida o formato do email
+    const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/; // Regex para validar email
     if (!email.match(emailPattern)) {
-        message.textContent = 'Por favor insira um email válido.';
-        return;
+        message.textContent = 'Por favor, insira um email válido.'; // Exibe mensagem de erro
+        return; // Interrompe a execução se houver erro
     }
 
-    if (!password.length < 6) {
-        message.textContent = 'A senha deve ter no mínimo 6 caracteres.';
-        return;
+    // Valida a senha (mínimo de 6 caracteres)
+    if (password.length < 6) {
+        message.textContent = 'A senha deve ter pelo menos 6 caracteres.'; // Exibe mensagem de erro
+        return; // Interrompe a execução se houver erro
     }
 
-
-    form.submit();
-
-
+    // Se todas as validações passarem, o formulário é enviado
+    form.submit(); // Envia o formulário
 });
