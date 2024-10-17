@@ -1,25 +1,31 @@
-<?
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "dados_usuarios";
+<?php
+// Configurações do banco de dados
+$servername = "localhost"; // Normalmente 'localhost'
+$username = "root";  // Substitua pelo seu usuário do banco
+$password = 'P@$$w0rd';     // Substitua pela sua senha do banco
+$dbname = "dados_usuarios";   // Nome do banco de dados
 
-
+// Cria conexão
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-if($conn->connect_error){
-    die("Conexão Falhou: " . $conn->connect_error);
+// Verifica a conexão
+if ($conn->connect_error) {
+    die("Conexão falhou: " . $conn->connect_error);
 }
 
-if($_SERVER["REQUEST_METHOD"] == "POST"){
+// Verifica se o método de requisição é POST
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Obtém os dados do formulário
     $nome = $_POST['name'];
     $email = $_POST['email'];
     $senha = $_POST['password'];
 
+    // Prepara e executa a inserção
     $stmt = $conn->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $nome, $email, $senha);
+    $stmt->bind_param("sss", $nome, $email, $senha); // 'sss' indica que os parâmetros são strings
 
-    if($stmt->execute()){
+    if ($stmt->execute()) {
+        // Exibe a mensagem personalizada com fundo azul-marinho e letra branca
         echo '
         <html>
         <head>
@@ -60,10 +66,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         echo "Erro: " . $stmt->error;
     }
 
+    // Fecha a declaração e a conexão
     $stmt->close();
     $conn->close();
-    
-}else{
+} else {
     echo "Método não suportado.";
 }
 ?>
