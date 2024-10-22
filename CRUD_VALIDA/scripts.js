@@ -5,7 +5,7 @@ document.querySelector('form').addEventListener('submit', function(event){
     var nome = document.getElementById('nome').value;
     var telefone = document.getElementById('telefone').value;
 
-    if(email == '' || senha == ''){
+    if(email == '' || senha == '' || nome == '' || telefone == ''){
         alert('Por favor, preencha todos os campos');
         event.preventDefault();
     }else{
