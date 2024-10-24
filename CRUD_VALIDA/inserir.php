@@ -21,7 +21,7 @@ $email = $_POST['email'];
 $senha = $_POST['senha'];
 
 
-$sql = "INSERT INTO pessoas (nome, telefone, email, senha) VALUES ('$nome', '$telefone', '$email', '$senha')";
+$sql = "INSERT INTO pessoas(nome, telefone, email, senha) VALUES('$nome', '$telefone', '$email', '$senha')";
 
 
 if($conn->query($sql) === TRUE){
