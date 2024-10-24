@@ -1,4 +1,4 @@
-<?
+<?php
 
 $servername = "localhost";
 $username = "root";
@@ -10,8 +10,8 @@ $dbname = "dados_pessoas";
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 
-if($conn->connect_error){
-    die("Conexão falhou: " . $conn->$connect_error);
+if($conn->connect_error) {
+    die("Falha na conexão: " . $conn->$connect_error);
 }
 
 
@@ -70,7 +70,7 @@ if($conn->query($sql) === TRUE){
     </html>
     <?
 }else{
-    echo "Erro ao inserir os dados" . $conn->error;
+    echo "Erro ao inserir os dados: " . $conn->error;
 }
 
 $conn->close();
