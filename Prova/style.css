@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+body{
+  
+    font-family: Arial, sans-serif;
+    background-color:  #003366;
+    padding: 20px;
+    color:white;
+}
+
+header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+hheader h1 {
+    margin: 0; /* Remove a margem padrão */
+}
+
+header nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+}
+
+header nav a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+header nav a:hover {
+    color: #177ce0;
+    transition: all 0.3s ease;
+}
+
+
+form{
+    
+    box-shadow: 0px 10px 40px #00000056;
+    border-radius: 20px ;
+    width: 30%;
+    padding: 30px 35px;
+    color: white;
+    
+}
+
+
+.cadastro-section h2{
+    margin-left: 95px;
+}
+
+.form-cad{
+    display:block;
+    align-items: center;
+    justify-content: center;
+    margin-left: 35%;
+}
+
+label{
+   
+    display: block;
+    margin-bottom: 5px;
+    margin-left: 120px;
+    margin-top: 10px;
+    color: white;
+}
+
+
+input[type="text"],
+input[type="email"],
+input[type="password"]{
+    margin-left: 120px;
+    padding: 5px;
+    width: 60%;
+    border: 1px solid #ccc;
+    border-radius:4px ;
+    margin-bottom: 10px;
+    
+}
+
+
+ textarea{
+    margin-left: 120px;
+    padding: 20px 5px;
+    width: 60%;
+    border: 1px solid #ccc;
+    border-radius:4px ;
+    margin-bottom: 10px;
+}
+
+h2{
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+
+button{
+    color: white;
+    background-color: #177ce0;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 240px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
