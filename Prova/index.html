@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuário - TechStore</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Cadastro de Usuário - TechStore</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="produtos.html">Produtos</a>
+            <a href="contato.html">Contato</a>
+        </nav>
+    </header>
+
+    <section class="cadastro-section">
+        <h2>Cadastre-se para receber novidades</h2>
+        <form action="processForm.php" method="POST" class="form-cad">
+            <label for="usuario">Usuário</label>
+            <input type="text" name="nome" id="nome" placeholder="Nome Completo" >
+            <label for="email">E-mail</label> 
+            <input type="email" name="email" id="email" placeholder="Email" > <br>
+            <label for="senha">Senha</label> 
+            <input type="password" name="senha" id="senha" placeholder="Senha"> <br> <br>
+            <textarea name="details" id="details" placeholder="Descreva suas necessidades ou interesses"></textarea>
+            <button type="submit">Cadastrar</button>
+        </form>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
