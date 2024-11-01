@@ -21,6 +21,8 @@ header{
 .navigation .logo{
     width: 50px;
 }
+
+
 .navigation ul{
     display: flex;
     align-items: center;
