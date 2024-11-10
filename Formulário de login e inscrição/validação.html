@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Validação de Cadastro</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Validação de Cadastro</h2>
+        <div id="resultado">
+            <!-- O resultado será inserido aqui -->
+        </div>
+        <button onclick="voltar()">Voltar para o Cadastro</button>
+    </div>
+
+    <script>
+        // Função para simular a validação do cadastro
+        function validarCadastro() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username');
+            const email = urlParams.get('email');
+            const password = urlParams.get('password');
+
+            // Simulação de validação
+            if (username && email && password) {
+                document.getElementById('resultado').innerHTML = `
+                    <p>Cadastro realizado com sucesso!</p>
+                    <p>Nome de usuário: ${username}</p>
+                    <p>Email: ${email}</p>
+                `;
+            } else {
+                document.getElementById('resultado').innerHTML = `
+                    <p>Erro: Todos os campos são obrigatórios.</p>
+                `;
+            }
+        }
+
+        // Chama a função de validação ao carregar a página
+        window.onload = validarCadastro;
+
+        // Função para voltar ao formulário de cadastro
+        function voltar() {
+            window.location.href = 'index.html'; // Altere para o nome do seu arquivo de cadastro
+        }
+    </script>
+</body>
+</html>
