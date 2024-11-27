@@ -1,0 +1,51 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #0088b2;
+}
+section{
+    position: relative;
+    width: 400px;
+    height: 60px;
+}
+
+section input{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0 20px;
+    border: 0;
+    outline: none;
+    background: #f1f1f1;
+    font-size: 18px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px 0 #000 ;
+}
+
+#icon{
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    background: url('./img/olho.png');
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    background-size: cover;
+}
+
+#icon.hide{
+    background: url('./img/eye-slash.png');
+    background-size: cover;
+}
