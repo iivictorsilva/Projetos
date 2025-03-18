@@ -79,6 +79,66 @@ def devolver_veiculo():
     messagebox.showinfo("Sucesso", f"Veículo {veiculo.marca} {veiculo.modelo} devolvido com sucesso!")
     listar_veiculos()
 
+# Função para editar um veículo
+def editar_veiculo():
+    selecionado = lista_veiculos.curselection()
+    if not selecionado:
+        messagebox.showwarning("Erro", "Selecione um veículo para editar!")
+        return
+
+    index = selecionado[0]
+    veiculo = veiculos[index]
+
+    # Janela de edição
+    janela_edicao = tk.Toplevel(root)
+    janela_edicao.title("Editar Veículo")
+
+    # Campos de edição
+    tk.Label(janela_edicao, text="Marca:").grid(row=0, column=0, padx=10, pady=5)
+    entry_marca_edicao = tk.Entry(janela_edicao)
+    entry_marca_edicao.insert(0, veiculo.marca)
+    entry_marca_edicao.grid(row=0, column=1, padx=10, pady=5)
+
+    tk.Label(janela_edicao, text="Modelo:").grid(row=1, column=0, padx=10, pady=5)
+    entry_modelo_edicao = tk.Entry(janela_edicao)
+    entry_modelo_edicao.insert(0, veiculo.modelo)
+    entry_modelo_edicao.grid(row=1, column=1, padx=10, pady=5)
+
+    tk.Label(janela_edicao, text="Ano:").grid(row=2, column=0, padx=10, pady=5)
+    entry_ano_edicao = tk.Entry(janela_edicao)
+    entry_ano_edicao.insert(0, veiculo.ano)
+    entry_ano_edicao.grid(row=2, column=1, padx=10, pady=5)
+
+    tk.Label(janela_edicao, text="Diária (R$):").grid(row=3, column=0, padx=10, pady=5)
+    entry_diaria_edicao = tk.Entry(janela_edicao)
+    entry_diaria_edicao.insert(0, veiculo.diaria)
+    entry_diaria_edicao.grid(row=3, column=1, padx=10, pady=5)
+
+    # Função para salvar as alterações
+    def salvar_edicao():
+        veiculo.marca = entry_marca_edicao.get()
+        veiculo.modelo = entry_modelo_edicao.get()
+        veiculo.ano = int(entry_ano_edicao.get())
+        veiculo.diaria = float(entry_diaria_edicao.get())
+        messagebox.showinfo("Sucesso", "Veículo editado com sucesso!")
+        janela_edicao.destroy()
+        listar_veiculos()
+
+    # Botão para salvar
+    tk.Button(janela_edicao, text="Salvar", command=salvar_edicao).grid(row=4, column=0, columnspan=2, pady=10)
+
+# Função para excluir um veículo
+def excluir_veiculo():
+    selecionado = lista_veiculos.curselection()
+    if not selecionado:
+        messagebox.showwarning("Erro", "Selecione um veículo para excluir!")
+        return
+
+    index = selecionado[0]
+    veiculo = veiculos.pop(index)
+    messagebox.showinfo("Sucesso", f"Veículo {veiculo.marca} {veiculo.modelo} excluído com sucesso!")
+    listar_veiculos()
+
 # Função para limpar os campos de entrada
 def limpar_campos():
     entry_marca.delete(0, tk.END)
@@ -111,12 +171,12 @@ entry_diaria.grid(row=3, column=1, padx=10, pady=5)
 tk.Button(root, text="Adicionar Veículo", command=adicionar_veiculo).grid(row=4, column=0, columnspan=2, pady=10)
 tk.Button(root, text="Alugar Veículo", command=alugar_veiculo).grid(row=5, column=0, pady=5)
 tk.Button(root, text="Devolver Veículo", command=devolver_veiculo).grid(row=5, column=1, pady=5)
+tk.Button(root, text="Editar Veículo", command=editar_veiculo).grid(row=6, column=0, pady=5)
+tk.Button(root, text="Excluir Veículo", command=excluir_veiculo).grid(row=6, column=1, pady=5)
 
 # Lista de veículos
 lista_veiculos = tk.Listbox(root, width=50, height=10)
-lista_veiculos.grid(row=6, column=0, columnspan=2, padx=10, pady=10)
+lista_veiculos.grid(row=7, column=0, columnspan=2, padx=10, pady=10)
 
 # Iniciar a interface
 root.mainloop()
-
-
