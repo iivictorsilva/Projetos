@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quebra-Cabeça de Emoji com Arraste</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f5f5;
+            padding: 20px;
+            touch-action: none;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        #puzzle-container {
+            display: grid;
+            grid-template-columns: repeat(3, 120px);
+            grid-template-rows: repeat(3, 120px);
+            gap: 5px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .tile {
+            width: 120px;
+            height: 120px;
+            background-size: 360px 360px;
+            cursor: grab;
+            border-radius: 8px;
+            transition: transform 0.2s ease;
+            position: relative;
+            z-index: 1;
+            user-select: none;
+        }
+        
+        .tile:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .empty {
+            background-color: #e0e0e0;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            cursor: default;
+        }
+        
+        #controls {
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #FF9500;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #E68600;
+        }
+        
+        #moves {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        #message {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4CAF50;
+            height: 30px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        #original-emoji {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Quebra-Cabeça de Emoji com Arraste</h1>
+    <div id="moves">Movimentos: 0</div>
+    <div id="message"></div>
+    
+    <div id="original-emoji"></div>
+    
+    <div id="puzzle-container"></div>
+    
+    <div id="controls">
+        <button id="shuffle-btn">Embaralhar</button>
+        <button id="solve-btn">Mostrar Solução</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const puzzleContainer = document.getElementById('puzzle-container');
+            const originalEmoji = document.getElementById('original-emoji');
+            const shuffleBtn = document.getElementById('shuffle-btn');
+            const solveBtn = document.getElementById('solve-btn');
+            const movesDisplay = document.getElementById('moves');
+            const messageDisplay = document.getElementById('message');
+            
+            // Emoji escolhido
+            const emoji = "😎";
+            
+            // Configurações do canvas
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 360;
+            canvas.height = 360;
+            
+            // Desenha o emoji no canvas
+            ctx.font = '300px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(emoji, canvas.width/2, canvas.height/2);
+            
+            // Mostra o emoji original
+            originalEmoji.style.backgroundImage = `url(${canvas.toDataURL()})`;
+            originalEmoji.style.backgroundSize = 'cover';
+            
+            let tiles = [];
+            let emptyPos = 8; // Posição do espaço vazio
+            let moves = 0;
+            let isSolved = true;
+            let isAnimating = false;
+            let draggedTile = null;
+            let dragStartX = 0;
+            let dragStartY = 0;
+            let tileStartX = 0;
+            let tileStartY = 0;
+            
+            // Inicializa o quebra-cabeça
+            function initPuzzle() {
+                puzzleContainer.innerHTML = '';
+                tiles = [];
+                
+                // Cria as peças
+                for (let i = 0; i < 8; i++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    
+                    const row = Math.floor(i / 3);
+                    const col = i % 3;
+                    const bgPosX = -col * 120;
+                    const bgPosY = -row * 120;
+                    
+                    tile.style.backgroundImage = `url(${canvas.toDataURL()})`;
+                    tile.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+                    tile.dataset.index = i;
+                    tile.dataset.row = row;
+                    tile.dataset.col = col;
+                    
+                    // Eventos de arraste
+                    tile.addEventListener('mousedown', startDrag);
+                    tile.addEventListener('touchstart', startDrag, { passive: false });
+                    
+                    tiles.push(tile);
+                    puzzleContainer.appendChild(tile);
+                }
+                
+                // Espaço vazio
+                const emptyTile = document.createElement('div');
+                emptyTile.className = 'tile empty';
+                emptyTile.dataset.index = 8;
+                emptyTile.dataset.row = 2;
+                emptyTile.dataset.col = 2;
+                tiles.push(emptyTile);
+                puzzleContainer.appendChild(emptyTile);
+                
+                moves = 0;
+                movesDisplay.textContent = 'Movimentos: 0';
+                messageDisplay.textContent = '';
+                isSolved = true;
+            }
+            
+            // Começa a arrastar a peça
+            function startDrag(e) {
+                if (isSolved || isAnimating) return;
+                
+                e.preventDefault();
+                draggedTile = this;
+                
+                // Posição inicial do mouse/toque
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+                
+                dragStartX = clientX;
+                dragStartY = clientY;
+                
+                // Posição inicial da peça
+                const rect = draggedTile.getBoundingClientRect();
+                tileStartX = rect.left;
+                tileStartY = rect.top;
+                
+                // Prepara para mover
+                draggedTile.style.position = 'absolute';
+                draggedTile.style.left = `${rect.left}px`;
+                draggedTile.style.top = `${rect.top}px`;
+                draggedTile.style.zIndex = '100';
+                draggedTile.style.transform = 'scale(1.05)';
+                
+                // Adiciona eventos de movimento e fim
+                document.addEventListener('mousemove', dragTile);
+                document.addEventListener('touchmove', dragTile, { passive: false });
+                document.addEventListener('mouseup', endDrag);
+                document.addEventListener('touchend', endDrag);
+            }
+            
+            // Arrasta a peça
+            function dragTile(e) {
+                if (!draggedTile) return;
+                e.preventDefault();
+                
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+                
+                // Calcula a distância do arraste
+                const dx = clientX - dragStartX;
+                const dy = clientY - dragStartY;
+                
+                // Move a peça
+                draggedTile.style.left = `${tileStartX + dx}px`;
+                draggedTile.style.top = `${tileStartY + dy}px`;
+            }
+            
+            // Termina o arraste
+            function endDrag(e) {
+                if (!draggedTile) return;
+                e.preventDefault();
+                
+                // Remove os eventos
+                document.removeEventListener('mousemove', dragTile);
+                document.removeEventListener('touchmove', dragTile);
+                document.removeEventListener('mouseup', endDrag);
+                document.removeEventListener('touchend', endDrag);
+                
+                // Verifica se a peça foi solta perto do espaço vazio
+                const emptyTile = tiles[emptyPos];
+                const draggedRect = draggedTile.getBoundingClientRect();
+                const emptyRect = emptyTile.getBoundingClientRect();
+                
+                // Distância entre a peça e o espaço vazio
+                const distance = Math.sqrt(
+                    Math.pow(draggedRect.left + draggedRect.width/2 - (emptyRect.left + emptyRect.width/2), 2) +
+                    Math.pow(draggedRect.top + draggedRect.height/2 - (emptyRect.top + emptyRect.height/2), 2)
+                );
+                
+                // Se estiver perto o suficiente, move a peça
+                if (distance < 150) {
+                    const draggedIndex = parseInt(draggedTile.dataset.index);
+                    const possibleMoves = getPossibleMoves();
+                    
+                    if (possibleMoves.includes(draggedIndex)) {
+                        moveTile(draggedIndex);
+                    }
+                }
+                
+                // Reseta a peça arrastada
+                resetDraggedTile();
+            }
+            
+            // Reseta a peça arrastada para a posição original
+            function resetDraggedTile() {
+                if (!draggedTile) return;
+                
+                draggedTile.style.position = '';
+                draggedTile.style.left = '';
+                draggedTile.style.top = '';
+                draggedTile.style.zIndex = '';
+                draggedTile.style.transform = '';
+                draggedTile = null;
+            }
+            
+            // Move uma peça para o espaço vazio
+            function moveTile(index) {
+                const tile = tiles[index];
+                const emptyTile = tiles[emptyPos];
+                
+                // Move visualmente
+                tile.classList.add('empty');
+                emptyTile.classList.remove('empty');
+                
+                // Troca as posições de fundo
+                emptyTile.style.backgroundImage = tile.style.backgroundImage;
+                emptyTile.style.backgroundPosition = tile.style.backgroundPosition;
+                tile.style.backgroundImage = '';
+                
+                // Atualiza os dados
+                emptyTile.dataset.row = tile.dataset.row;
+                emptyTile.dataset.col = tile.dataset.col;
+                
+                tile.dataset.row = Math.floor(emptyPos / 3);
+                tile.dataset.col = emptyPos % 3;
+                
+                // Atualiza os índices
+                tile.dataset.index = emptyPos;
+                emptyTile.dataset.index = index;
+                
+                // Atualiza o array de peças
+                tiles[emptyPos] = tile;
+                tiles[index] = emptyTile;
+                
+                emptyPos = index;
+                moves++;
+                movesDisplay.textContent = `Movimentos: ${moves}`;
+                
+                if (checkSolved()) {
+                    isSolved = true;
+                    messageDisplay.textContent = 'Parabéns! Você completou o emoji! 🎉';
+                }
+            }
+            
+            // Embaralha as peças
+            function shufflePuzzle() {
+                if (isAnimating) return;
+                
+                isSolved = false;
+                messageDisplay.textContent = '';
+                moves = 0;
+                movesDisplay.textContent = 'Movimentos: 0';
+                
+                // Faz 200 movimentos aleatórios para embaralhar
+                let shuffleCount = 0;
+                const shuffleInterval = setInterval(() => {
+                    if (shuffleCount >= 200) {
+                        clearInterval(shuffleInterval);
+                        isAnimating = false;
+                        return;
+                    }
+                    
+                    const possibleMoves = getPossibleMoves();
+                    const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                    
+                    // Move a peça para a posição vazia
+                    const tile = tiles[randomMove];
+                    const emptyTile = tiles[emptyPos];
+                    
+                    // Atualiza visualmente
+                    tile.classList.add('empty');
+                    emptyTile.classList.remove('empty');
+                    
+                    // Troca as posições de fundo
+                    emptyTile.style.backgroundImage = tile.style.backgroundImage;
+                    emptyTile.style.backgroundPosition = tile.style.backgroundPosition;
+                    tile.style.backgroundImage = '';
+                    
+                    // Atualiza os dados
+                    emptyTile.dataset.row = tile.dataset.row;
+                    emptyTile.dataset.col = tile.dataset.col;
+                    
+                    tile.dataset.row = Math.floor(emptyPos / 3);
+                    tile.dataset.col = emptyPos % 3;
+                    
+                    // Atualiza os índices
+                    tile.dataset.index = emptyPos;
+                    emptyTile.dataset.index = randomMove;
+                    
+                    // Atualiza o array de peças
+                    tiles[emptyPos] = tile;
+                    tiles[randomMove] = emptyTile;
+                    
+                    emptyPos = randomMove;
+                    shuffleCount++;
+                }, 10);
+                
+                isAnimating = true;
+            }
+            
+            // Obtém as posições possíveis para mover
+            function getPossibleMoves() {
+                const possibleMoves = [];
+                const row = Math.floor(emptyPos / 3);
+                const col = emptyPos % 3;
+                
+                // Verifica posições adjacentes
+                if (row > 0) possibleMoves.push(emptyPos - 3); // Acima
+                if (row < 2) possibleMoves.push(emptyPos + 3); // Abaixo
+                if (col > 0) possibleMoves.push(emptyPos - 1); // Esquerda
+                if (col < 2) possibleMoves.push(emptyPos + 1); // Direita
+                
+                return possibleMoves;
+            }
+            
+            // Verifica se o quebra-cabeça está resolvido
+            function checkSolved() {
+                for (let i = 0; i < 8; i++) {
+                    const row = Math.floor(i / 3);
+                    const col = i % 3;
+                    const expectedPosX = -col * 120;
+                    const expectedPosY = -row * 120;
+                    
+                    const tile = tiles[i];
+                    const bgPos = tile.style.backgroundPosition;
+                    
+                    if (bgPos !== `${expectedPosX}px ${expectedPosY}px`) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            
+            // Mostra a solução
+            function showSolution() {
+                if (isSolved || isAnimating) return;
+                
+                isAnimating = true;
+                messageDisplay.textContent = 'Mostrando solução...';
+                
+                // Reorganiza as peças na ordem correta
+                for (let i = 0; i < 8; i++) {
+                    const tile = tiles[i];
+                    const row = Math.floor(i / 3);
+                    const col = i % 3;
+                    const bgPosX = -col * 120;
+                    const bgPosY = -row * 120;
+                    
+                    tile.style.backgroundImage = `url(${canvas.toDataURL()})`;
+                    tile.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+                    tile.classList.remove('empty');
+                    tile.dataset.index = i;
+                    tile.dataset.row = row;
+                    tile.dataset.col = col;
+                }
+                
+                // Coloca o espaço vazio na última posição
+                const emptyTile = tiles[8];
+                emptyTile.style.backgroundImage = '';
+                emptyTile.classList.add('empty');
+                emptyTile.dataset.index = 8;
+                emptyTile.dataset.row = 2;
+                emptyTile.dataset.col = 2;
+                
+                // Reorganiza o array de peças
+                for (let i = 0; i < 8; i++) {
+                    tiles[i] = document.querySelector(`.tile[data-index="${i}"]`);
+                }
+                tiles[8] = emptyTile;
+                emptyPos = 8;
+                
+                isSolved = true;
+                isAnimating = false;
+                messageDisplay.textContent = 'Emoji completo! ' + emoji;
+            }
+            
+            // Event listeners
+            shuffleBtn.addEventListener('click', shufflePuzzle);
+            solveBtn.addEventListener('click', showSolution);
+            
+            // Inicializa o quebra-cabeça
+            initPuzzle();
+        });
+    </script>
+</body>
+</html>
